@@ -11,6 +11,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <nav className="nav__links">
           <Link className="pill" href={"/pricing" as const}>Pricing</Link>
           <Link className="pill" href={{ pathname: "/open-core" }}>Open core</Link>
+          <Link className="pill" href={{ pathname: "/demo/agent" }}>Agent demo</Link>
           <Link className="pill" href="/dashboard">Overview</Link>
           <Link className="pill" href={{ pathname: "/dashboard/customers" }}>Customers</Link>
           <Link className="pill" href={"/dashboard/monitoring" as const}>Monitoring</Link>

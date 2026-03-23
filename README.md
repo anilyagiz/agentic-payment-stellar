@@ -40,6 +40,7 @@ STELLAR_RPC_URL=https://soroban-testnet.stellar.org
 PLATFORM_PUBLIC_KEY=G...
 PLATFORM_SECRET_KEY=S...
 SPONSOR_SECRET_KEY=S...
+DEMO_AGENT_SECRET_KEY=S...
 FEE_BPS=30
 API_KEY_PEPPER=change-me
 INDEXER_SECRET=change-me
@@ -59,6 +60,7 @@ npm run dev
 - Landing page: `/`
 - Pricing page: `/pricing`
 - Open-core model: `/open-core`
+- Agent demo: `/demo/agent`
 - Dashboard overview: `/dashboard`
 - Transactions: `/dashboard/transactions`
 - Agents: `/dashboard/agents`
@@ -66,6 +68,7 @@ npm run dev
 - Monitoring: `/dashboard/monitoring`
 - Tool manifest API: `/api/tools`
 - Entitlements API: `/api/entitlements`
+- Agent demo API: `/api/agent-demo`
 
 ## Submission Docs
 

@@ -32,6 +32,7 @@ export default function OpenCorePage() {
         <div className="hero__actions">
           <Link className="button button--primary" href="/pricing">See pricing</Link>
           <Link className="button button--secondary" href="/dashboard">Open dashboard</Link>
+          <Link className="button button--secondary" href={{ pathname: "/demo/agent" }}>Run agent demo</Link>
           <a className="button button--secondary" href="/api/tools">Tool manifest</a>
         </div>
       </section>

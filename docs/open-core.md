@@ -26,6 +26,31 @@ The SDK exposes a machine-readable manifest and executor so AI agents can:
 - submit a standard payment
 - submit a sponsored payment when the plan allows it
 
+## Example agent client
+
+```ts
+import { StellarAgentDemoClient } from "stellaragent-sdk";
+
+const client = new StellarAgentDemoClient({
+  secretKey: process.env.DEMO_AGENT_SECRET_KEY!,
+  sponsorSecret: process.env.SPONSOR_SECRET_KEY,
+  network: "testnet"
+});
+
+const result = await client.run({
+  task: "Pay 0.5 XLM to the creator wallet after quoting the fee",
+  amount: "0.5",
+  destination: "G...",
+  useLlm: true,
+  llm: {
+    apiKey: process.env.OPENAI_API_KEY,
+    model: "gpt-4o-mini"
+  }
+});
+```
+
+The same flow is exposed in the dashboard at `/demo/agent` and through the API at `/api/agent-demo`.
+
 ## Commercial boundary
 
 The core product remains usable for experimentation and basic payments. The hosted paid layer is where you charge for operational features that save customers time, reduce risk, and support scale.

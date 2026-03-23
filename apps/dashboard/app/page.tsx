@@ -22,6 +22,7 @@ export default function LandingPage() {
           <Link className="button button--primary" href="/dashboard">Open dashboard</Link>
           <Link className="button button--secondary" href={"/pricing" as const}>View pricing</Link>
           <Link className="button button--secondary" href={{ pathname: "/open-core" }}>Open core model</Link>
+          <Link className="button button--secondary" href={{ pathname: "/demo/agent" }}>Run agent demo</Link>
           <a className="button button--secondary" href="/api/health">Health check</a>
         </div>
       </section>
