@@ -14,6 +14,13 @@ enum TransactionStatus {
   failed
 }
 
+enum CustomerStatus {
+  lead
+  trial
+  active
+  churned
+}
+
 model Agent {
   id           String        @id @default(cuid())
   name         String
@@ -24,6 +31,25 @@ model Agent {
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
   transactions Transaction[]
+  customer     Customer?
+}
+
+model Customer {
+  id               String         @id @default(cuid())
+  name             String
+  email            String         @unique
+  company          String?
+  plan             String         @default("Starter")
+  monthlyVolumeUsd String         @default("0")
+  status           CustomerStatus  @default(lead)
+  source           String         @default("pricing")
+  walletPublicKey  String?        @unique
+  notes            String?
+  lastContactAt    DateTime?
+  agentId          String?        @unique
+  agent            Agent?         @relation(fields: [agentId], references: [id], onDelete: SetNull)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
 }
 
 model Transaction {

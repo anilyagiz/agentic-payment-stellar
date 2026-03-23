@@ -192,7 +192,7 @@ main {
 
 .grid--two {
   grid-template-columns: 1.45fr 0.95fr;
-  align-items: start;
+  align-items: flex-start;
 }
 
 .metric-card, .panel {
@@ -289,6 +289,26 @@ main {
 }
 
 .status--failed {
+  background: rgba(248, 113, 113, 0.14);
+  color: #fecaca;
+}
+
+.status--lead {
+  background: rgba(56, 189, 248, 0.12);
+  color: #bae6fd;
+}
+
+.status--trial {
+  background: rgba(251, 191, 36, 0.14);
+  color: #fde68a;
+}
+
+.status--active {
+  background: rgba(52, 211, 153, 0.15);
+  color: #a7f3d0;
+}
+
+.status--churned {
   background: rgba(248, 113, 113, 0.14);
   color: #fecaca;
 }
@@ -470,7 +490,7 @@ main {
 
 .pricing-card__top {
   display: flex;
-  align-items: start;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
 }
@@ -527,7 +547,7 @@ main {
 
 .revenue-slider__header {
   display: flex;
-  align-items: start;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
 }
@@ -576,6 +596,20 @@ main {
   flex-wrap: wrap;
   gap: 10px;
   margin-top: 6px;
+}
+
+.progress-track {
+  height: 12px;
+  margin-top: 16px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.08);
+  overflow: hidden;
+}
+
+.progress-track__fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #38bdf8, #fb923c);
 }
 
 .revenue-benefits {

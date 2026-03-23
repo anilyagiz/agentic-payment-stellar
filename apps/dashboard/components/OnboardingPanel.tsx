@@ -49,12 +49,17 @@ export function OnboardingPanel() {
   const [wallet, setWallet] = useState<WalletResponse | null>(null);
   const [registration, setRegistration] = useState<RegistrationResponse | null>(null);
   const [name, setName] = useState("Aurora Agent");
+  const [email, setEmail] = useState("");
+  const [company, setCompany] = useState("");
+  const [plan, setPlan] = useState("Pro");
+  const [monthlyVolumeUsd, setMonthlyVolumeUsd] = useState("25000");
   const [publicKey, setPublicKey] = useState("");
   const [walletError, setWalletError] = useState<string | null>(null);
   const [registrationError, setRegistrationError] = useState<string | null>(null);
   const [walletPending, setWalletPending] = useState(false);
   const [registrationPending, setRegistrationPending] = useState(false);
   const [copied, setCopied] = useState<"api" | "secret" | null>(null);
+  const [submitState, setSubmitState] = useState<string | null>(null);
 
   async function handleWalletCreate() {
     setWalletPending(true);
@@ -75,13 +80,20 @@ export function OnboardingPanel() {
     event.preventDefault();
     setRegistrationPending(true);
     setRegistrationError(null);
+    setSubmitState(null);
 
     try {
       const response = await postJson<RegistrationResponse>("/api/register", {
         name,
-        publicKey
+        email,
+        company,
+        plan,
+        monthlyVolumeUsd,
+        publicKey,
+        source: "onboarding"
       });
       setRegistration(response);
+      setSubmitState(`Customer activated as ${plan}.`);
       setCopied(null);
     } catch (error) {
       setRegistrationError(error instanceof Error ? error.message : "Registration failed");
@@ -136,18 +148,10 @@ export function OnboardingPanel() {
                   <p className="launchpad__mono">{wallet.secretKey}</p>
                 </div>
                 <div className="launchpad__result-actions">
-                  <button
-                    className="button button--secondary"
-                    type="button"
-                    onClick={() => copyValue(wallet.publicKey, "api")}
-                  >
+                  <button className="button button--secondary" type="button" onClick={() => copyValue(wallet.publicKey, "api")}>
                     Copy public key
                   </button>
-                  <button
-                    className="button button--secondary"
-                    type="button"
-                    onClick={() => copyValue(wallet.secretKey, "secret")}
-                  >
+                  <button className="button button--secondary" type="button" onClick={() => copyValue(wallet.secretKey, "secret")}>
                     Copy secret key
                   </button>
                 </div>
@@ -170,6 +174,50 @@ export function OnboardingPanel() {
                 />
               </label>
               <label className="launchpad__field">
+                <span>Email</span>
+                <input
+                  className="launchpad__input"
+                  name="email"
+                  type="email"
+                  value={email}
+                  onChange={(event) => setEmail(event.currentTarget.value)}
+                  placeholder="you@company.com"
+                />
+              </label>
+              <label className="launchpad__field">
+                <span>Company</span>
+                <input
+                  className="launchpad__input"
+                  name="company"
+                  value={company}
+                  onChange={(event) => setCompany(event.currentTarget.value)}
+                  placeholder="Company name"
+                />
+              </label>
+              <label className="launchpad__field">
+                <span>Plan</span>
+                <select
+                  className="launchpad__input"
+                  name="plan"
+                  value={plan}
+                  onChange={(event) => setPlan(event.currentTarget.value)}
+                >
+                  <option value="Starter">Starter</option>
+                  <option value="Pro">Pro</option>
+                  <option value="Scale">Scale</option>
+                </select>
+              </label>
+              <label className="launchpad__field">
+                <span>Monthly volume</span>
+                <input
+                  className="launchpad__input"
+                  name="monthlyVolumeUsd"
+                  value={monthlyVolumeUsd}
+                  onChange={(event) => setMonthlyVolumeUsd(event.currentTarget.value)}
+                  placeholder="25000"
+                />
+              </label>
+              <label className="launchpad__field">
                 <span>Public key</span>
                 <input
                   className="launchpad__input"
@@ -181,7 +229,7 @@ export function OnboardingPanel() {
               </label>
               <div className="launchpad__result-actions">
                 <button className="button button--primary" type="submit" disabled={registrationPending}>
-                  {registrationPending ? "Registering..." : "Register agent"}
+                  {registrationPending ? "Registering..." : "Activate customer"}
                 </button>
                 <button
                   className="button button--secondary"
@@ -189,6 +237,10 @@ export function OnboardingPanel() {
                   onClick={() => {
                     setName("Aurora Agent");
                     setPublicKey(wallet?.publicKey ?? "");
+                    setEmail("");
+                    setCompany("");
+                    setPlan("Pro");
+                    setMonthlyVolumeUsd("25000");
                   }}
                 >
                   Fill from wallet
@@ -219,6 +271,7 @@ export function OnboardingPanel() {
                   Store the API key securely. It is returned once and hashed on the server.
                 </p>
                 {copied ? <p className="launchpad__copy-state">Copied {copied === "api" ? "API key" : "secret key"}</p> : null}
+                {submitState ? <p className="revenue-panel__status">{submitState}</p> : null}
               </div>
             ) : null}
           </article>

@@ -47,6 +47,26 @@ function calculateRevenue(plan: PricingPlan, monthlyVolumeUsd: number) {
   return plan.price + usageRevenue;
 }
 
+async function postJson<T>(path: string, body: Record<string, string>) {
+  const response = await fetch(path, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(body)
+  });
+
+  const payload = (await response.json().catch(() => null)) as T | { error?: string } | null;
+  if (!response.ok) {
+    const message = payload && typeof payload === "object" && "error" in payload && payload.error
+      ? payload.error
+      : `Request failed with status ${response.status}`;
+    throw new Error(message);
+  }
+
+  return payload as T;
+}
+
 export function MonetizationPanel() {
   const defaultPlan = plans[1]!;
   const [selectedPlan, setSelectedPlan] = useState<PricingPlan>(defaultPlan);
@@ -56,29 +76,37 @@ export function MonetizationPanel() {
   const [company, setCompany] = useState("");
   const [targetVolume, setTargetVolume] = useState("25000");
   const [leadStatus, setLeadStatus] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   const projectedMonthlyRevenue = calculateRevenue(selectedPlan, monthlyVolumeUsd);
   const projectedAnnualRevenue = projectedMonthlyRevenue * 12;
-  const salesEmail = process.env.NEXT_PUBLIC_SALES_EMAIL ?? "sales@stellaragent.dev";
 
-  function handleLeadSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleLeadSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setSubmitting(true);
+    setLeadStatus(null);
 
-    const subject = encodeURIComponent(`StellarAgent ${selectedPlan.name} plan inquiry`);
-    const body = encodeURIComponent(
-      [
-        `Name: ${name}`,
-        `Email: ${email}`,
-        `Company: ${company}`,
-        `Interested plan: ${selectedPlan.name}`,
-        `Estimated monthly volume: ${formatUsd(Number(targetVolume) || 0)}`,
-        "",
-        "Please reply with a plan recommendation and onboarding steps."
-      ].join("\n")
-    );
+    try {
+      const result = await postJson<{ customerId: string; status: string; plan: string }>("/api/customers", {
+        name,
+        email,
+        company,
+        plan: selectedPlan.name,
+        monthlyVolumeUsd: targetVolume,
+        source: "pricing",
+        status: "lead"
+      });
 
-    setLeadStatus("Opening your email client with a prefilled request.");
-    window.location.href = `mailto:${salesEmail}?subject=${subject}&body=${body}`;
+      setLeadStatus(`Added ${result.plan} lead to the customer pipeline. We will follow up at ${email}.`);
+      setName("");
+      setEmail("");
+      setCompany("");
+      setTargetVolume("25000");
+    } catch (error) {
+      setLeadStatus(error instanceof Error ? error.message : "Failed to save lead");
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -203,8 +231,8 @@ export function MonetizationPanel() {
           </label>
 
           <div className="lead-form__cta">
-            <button className="button button--primary" type="submit">
-              Request {selectedPlan.name}
+            <button className="button button--primary" type="submit" disabled={submitting}>
+              {submitting ? "Saving..." : `Join ${selectedPlan.name}`}
             </button>
             <button
               className="button button--secondary"
