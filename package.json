@@ -1,0 +1,16 @@
+{
+  "name": "stellaragent",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "npm@10.9.2",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build -w packages/sdk && npm run build -w apps/dashboard",
+    "dev": "npm run dev -w apps/dashboard",
+    "lint": "npm run lint -w apps/dashboard",
+    "typecheck": "npm run typecheck -w apps/dashboard && npm run typecheck -w packages/sdk"
+  }
+}

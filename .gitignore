@@ -1,0 +1,14 @@
+node_modules
+.next
+dist
+.turbo
+.env
+.env.local
+.env.development
+.env.production
+coverage
+*.log
+*.tsbuildinfo
+packages/**/dist
+apps/**/.next
+apps/**/dist
