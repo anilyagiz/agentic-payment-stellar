@@ -34,6 +34,10 @@ export default function AgentDemoPage() {
             <p className="mini-card__label">Step 3</p>
             <p>The SDK executes the tool and returns a result the agent can inspect.</p>
           </div>
+          <div className="mini-card">
+            <p className="mini-card__label">Live testnet</p>
+            <p>Create a funded recipient wallet inside the demo, then run the payment flow against Stellar testnet.</p>
+          </div>
         </div>
       </section>
     </main>

@@ -25,6 +25,13 @@ type AgentDemoResponse = {
   };
 };
 
+type WalletResponse = {
+  publicKey: string;
+  secretKey: string;
+  network: string;
+  warning: string;
+};
+
 async function postJson<T>(path: string, body: Record<string, string | boolean | undefined>) {
   const response = await fetch(path, {
     method: "POST",
@@ -56,6 +63,24 @@ export function AgentDemoPanel() {
   const [status, setStatus] = useState<string | null>(null);
   const [result, setResult] = useState<AgentDemoResponse | null>(null);
   const [loading, setLoading] = useState(false);
+  const [walletLoading, setWalletLoading] = useState(false);
+  const [wallet, setWallet] = useState<WalletResponse | null>(null);
+
+  async function createRecipientWallet() {
+    setWalletLoading(true);
+    setStatus(null);
+
+    try {
+      const response = await postJson<WalletResponse>("/api/wallet/create", {});
+      setWallet(response);
+      setDestination(response.publicKey);
+      setStatus(`Created a funded ${response.network} recipient wallet.`);
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "Wallet creation failed");
+    } finally {
+      setWalletLoading(false);
+    }
+  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -141,6 +166,9 @@ export function AgentDemoPanel() {
           </label>
 
           <div className="launchpad__result-actions">
+            <button className="button button--secondary" type="button" onClick={createRecipientWallet} disabled={walletLoading}>
+              {walletLoading ? "Creating wallet..." : "Create funded recipient"}
+            </button>
             <button className="button button--primary" type="submit" disabled={loading}>
               {loading ? "Running..." : "Run demo"}
             </button>
@@ -160,6 +188,15 @@ export function AgentDemoPanel() {
         </form>
 
         {status ? <p className="revenue-panel__status">{status}</p> : null}
+        {wallet ? (
+          <div className="launchpad__result">
+            <div>
+              <p className="launchpad__result-label">Recipient public key</p>
+              <p className="launchpad__mono">{wallet.publicKey}</p>
+            </div>
+            <p className="launchpad__note">{wallet.warning}</p>
+          </div>
+        ) : null}
       </article>
 
       <aside className="panel">
