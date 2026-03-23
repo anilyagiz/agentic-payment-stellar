@@ -3,6 +3,7 @@ import { z } from "zod";
 import { sponsoredPay } from "stellaragent-sdk";
 import { authenticateApiKey } from "@/lib/auth";
 import { resolveNetwork } from "@/lib/stellar";
+import { getSponsorSecret } from "@/lib/config";
 
 const SponsoredPaySchema = z.object({
   innerTxXdr: z.string().min(1),
@@ -22,7 +23,7 @@ export async function POST(req: NextRequest) {
   }
 
   const network = body.data.network ?? resolveNetwork();
-  const sponsorSecret = process.env.SPONSOR_SECRET_KEY;
+  const sponsorSecret = getSponsorSecret();
   if (!sponsorSecret) {
     return NextResponse.json({ error: "Sponsor secret is not configured" }, { status: 500 });
   }

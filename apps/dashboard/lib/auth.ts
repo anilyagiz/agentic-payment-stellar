@@ -1,7 +1,6 @@
 import crypto from "node:crypto";
 import { prisma } from "./db";
-
-const PEPPER = process.env.API_KEY_PEPPER ?? "local-dev-pepper";
+import { getApiKeyPepper } from "./config";
 
 export function generateApiKey() {
   const raw = `sa_${crypto.randomBytes(24).toString("hex")}`;
@@ -14,7 +13,7 @@ export function generateApiKey() {
 }
 
 export function hashApiKey(apiKey: string) {
-  return crypto.createHash("sha256").update(`${apiKey}:${PEPPER}`).digest("hex");
+  return crypto.createHash("sha256").update(`${apiKey}:${getApiKeyPepper()}`).digest("hex");
 }
 
 export async function authenticateApiKey(apiKey: string | null) {

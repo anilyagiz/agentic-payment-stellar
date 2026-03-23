@@ -1,16 +1,15 @@
 import { Api, Server } from "@stellar/stellar-sdk/rpc";
 import { Networks, Transaction } from "@stellar/stellar-sdk";
+import { resolveNetwork as resolveDashboardNetwork, resolveRpcUrl } from "./config";
 
 export type NetworkName = "testnet" | "mainnet";
 
 export function resolveNetwork(): NetworkName {
-  return process.env.STELLAR_NETWORK === "mainnet" ? "mainnet" : "testnet";
+  return resolveDashboardNetwork();
 }
 
 export function rpcUrlFor(network: NetworkName) {
-  return process.env.STELLAR_RPC_URL ?? (network === "mainnet"
-    ? "https://mainnet.stellar.org"
-    : "https://soroban-testnet.stellar.org");
+  return resolveRpcUrl(network);
 }
 
 export function networkPassphraseFor(network: NetworkName) {

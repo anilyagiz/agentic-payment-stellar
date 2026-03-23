@@ -13,12 +13,14 @@
 - Metrics dashboard: [`/dashboard`](../apps/dashboard/app/dashboard/page.tsx)
 - Transactions: [`/dashboard/transactions`](../apps/dashboard/app/dashboard/transactions/page.tsx)
 - Monitoring dashboard: [`/dashboard/monitoring`](../apps/dashboard/app/dashboard/monitoring/page.tsx)
+- Health endpoint: [`/api/health`](../apps/dashboard/app/api/health/route.ts)
 
 ## Current indexing flow
 
 - `POST /api/sync` reconciles pending transactions against Stellar RPC.
 - `GET /api/indexed-transactions` exposes the indexed transaction list.
 - `GET /api/metrics` powers the overview cards.
+- `GET /api/health` reports database and env readiness for deployments.
 
 ## Alerting guidance
 

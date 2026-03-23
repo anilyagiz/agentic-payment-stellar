@@ -2,10 +2,16 @@ import { NextRequest, NextResponse } from "next/server";
 import { Api } from "@stellar/stellar-sdk/rpc";
 import { prisma } from "@/lib/db";
 import { rpcServer, resolveNetwork } from "@/lib/stellar";
+import { getIndexerSecret } from "@/lib/config";
 
 export async function POST(req: NextRequest) {
   const secret = req.headers.get("x-indexer-secret");
-  if (!secret || secret !== process.env.INDEXER_SECRET) {
+  const configuredSecret = getIndexerSecret();
+  if (!configuredSecret) {
+    return NextResponse.json({ error: "Indexer secret is not configured" }, { status: 503 });
+  }
+
+  if (!secret || secret !== configuredSecret) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
