@@ -38,6 +38,7 @@ export default function PricingPage() {
         <div className="hero__actions">
           <Link className="button button--primary" href="/#launchpad">Start onboarding</Link>
           <Link className="button button--secondary" href="/dashboard">Open dashboard</Link>
+          <Link className="button button--secondary" href={{ pathname: "/open-core" }}>Open-core model</Link>
         </div>
       </section>
 

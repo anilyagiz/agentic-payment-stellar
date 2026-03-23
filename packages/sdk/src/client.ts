@@ -4,6 +4,8 @@ import { sponsoredPay } from "./feeBump";
 import { createRpcServer } from "./rpc";
 import { ensureSecretKey } from "./utils";
 import { Keypair } from "@stellar/stellar-sdk";
+import { createAgentToolManifest, executeAgentTool } from "./tools";
+import { AgentToolManifest } from "./tools";
 
 export class StellarAgentClient {
   constructor(private readonly config: StellarAgentConfig) {}
@@ -14,6 +16,17 @@ export class StellarAgentClient {
 
   async sponsoredPay(innerTxXdr: string, sponsorSecret: string): Promise<string> {
     return sponsoredPay(innerTxXdr, sponsorSecret, this.config.network, this.config.rpcUrl);
+  }
+
+  tools(): AgentToolManifest {
+    return createAgentToolManifest();
+  }
+
+  async runTool(
+    toolName: "quote_payment" | "pay" | "sponsored_pay",
+    input: Record<string, unknown>
+  ) {
+    return executeAgentTool(toolName, input, this.config);
   }
 
   async balance(): Promise<string> {

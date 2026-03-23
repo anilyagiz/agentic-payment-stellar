@@ -8,6 +8,7 @@ export interface StellarAgentConfig {
   feeBps?: number;
   feeDestination?: string;
   memoPrefix?: string;
+  sponsorSecret?: string;
 }
 
 export interface PaymentParams {

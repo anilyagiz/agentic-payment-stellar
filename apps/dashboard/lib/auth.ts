@@ -20,7 +20,12 @@ export async function authenticateApiKey(apiKey: string | null) {
   if (!apiKey) return null;
 
   const prefix = apiKey.slice(0, 12);
-  const agent = await prisma.agent.findUnique({ where: { apiKeyPrefix: prefix } });
+  const agent = await prisma.agent.findUnique({
+    where: { apiKeyPrefix: prefix },
+    include: {
+      customer: true
+    }
+  });
   if (!agent) return null;
 
   const incoming = hashApiKey(apiKey);

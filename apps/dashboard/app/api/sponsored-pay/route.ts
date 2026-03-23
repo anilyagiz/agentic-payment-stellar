@@ -4,6 +4,7 @@ import { sponsoredPay } from "stellaragent-sdk";
 import { authenticateApiKey } from "@/lib/auth";
 import { resolveNetwork } from "@/lib/stellar";
 import { getSponsorSecret } from "@/lib/config";
+import { hasFeature } from "@/lib/entitlements";
 
 const SponsoredPaySchema = z.object({
   innerTxXdr: z.string().min(1),
@@ -15,6 +16,16 @@ export async function POST(req: NextRequest) {
   const agent = await authenticateApiKey(apiKey);
   if (!agent) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  if (!hasFeature(agent.customer?.plan, "sponsored-pay")) {
+    return NextResponse.json(
+      {
+        error: "Sponsored payments are a paid feature",
+        upgrade: "Pro"
+      },
+      { status: 402 }
+    );
   }
 
   const body = SponsoredPaySchema.safeParse(await req.json().catch(() => null));
