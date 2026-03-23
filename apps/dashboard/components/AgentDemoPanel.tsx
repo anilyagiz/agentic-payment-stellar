@@ -32,6 +32,36 @@ type WalletResponse = {
   warning: string;
 };
 
+const CURL_SNIPPET = `curl -X POST https://your-domain.com/api/agent-pay \\
+  -H "Content-Type: application/json" \\
+  -H "x-api-key: YOUR_AGENT_API_KEY" \\
+  -d '{
+    "task": "Pay 0.5 XLM to the creator wallet and quote fees first.",
+    "amount": "0.5",
+    "destination": "G...",
+    "memo": "Demo payment",
+    "useLlm": true
+  }'`;
+
+const SDK_SNIPPET = `import { StellarAgentClient } from "stellaragent-sdk";
+
+const client = new StellarAgentClient({
+  secretKey: process.env.AGENT_SECRET_KEY!,
+  sponsorSecret: process.env.SPONSOR_SECRET_KEY,
+  network: "testnet"
+});
+
+const result = await client.runAgentTask({
+  task: "Pay 0.5 XLM to the creator wallet and quote fees first.",
+  amount: "0.5",
+  destination: "G...",
+  useLlm: true,
+  llm: {
+    apiKey: process.env.OPENAI_API_KEY,
+    model: "gpt-4o-mini"
+  }
+});`;
+
 async function postJson<T>(path: string, body: Record<string, string | boolean | undefined>) {
   const response = await fetch(path, {
     method: "POST",
@@ -65,6 +95,7 @@ export function AgentDemoPanel() {
   const [loading, setLoading] = useState(false);
   const [walletLoading, setWalletLoading] = useState(false);
   const [wallet, setWallet] = useState<WalletResponse | null>(null);
+  const [copiedSnippet, setCopiedSnippet] = useState<"curl" | "sdk" | null>(null);
 
   async function createRecipientWallet() {
     setWalletLoading(true);
@@ -104,6 +135,12 @@ export function AgentDemoPanel() {
     } finally {
       setLoading(false);
     }
+  }
+
+  async function copySnippet(value: string, kind: "curl" | "sdk") {
+    await navigator.clipboard.writeText(value);
+    setCopiedSnippet(kind);
+    window.setTimeout(() => setCopiedSnippet(null), 1200);
   }
 
   return (
@@ -197,6 +234,23 @@ export function AgentDemoPanel() {
             <p className="launchpad__note">{wallet.warning}</p>
           </div>
         ) : null}
+
+        <div className="stack">
+          <div className="mini-card">
+            <p className="mini-card__label">Copy curl</p>
+            <p className="footer-note">Use this to call the agent pay endpoint from any HTTP client.</p>
+            <button className="button button--secondary" type="button" onClick={() => copySnippet(CURL_SNIPPET, "curl")}>
+              {copiedSnippet === "curl" ? "Copied curl" : "Copy curl snippet"}
+            </button>
+          </div>
+          <div className="mini-card">
+            <p className="mini-card__label">Copy SDK</p>
+            <p className="footer-note">Use this in a Node or server-side agent worker.</p>
+            <button className="button button--secondary" type="button" onClick={() => copySnippet(SDK_SNIPPET, "sdk")}>
+              {copiedSnippet === "sdk" ? "Copied SDK" : "Copy SDK snippet"}
+            </button>
+          </div>
+        </div>
       </article>
 
       <aside className="panel">

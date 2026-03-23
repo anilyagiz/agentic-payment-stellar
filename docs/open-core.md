@@ -50,6 +50,7 @@ const result = await client.run({
 ```
 
 The same flow is exposed in the dashboard at `/demo/agent` and through the API at `/api/agent-demo`.
+For direct integrations, see the example script in [`examples/agent-pay.ts`](../examples/agent-pay.ts).
 
 ## Agent payment API
 

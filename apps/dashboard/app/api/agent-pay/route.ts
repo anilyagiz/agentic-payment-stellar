@@ -4,6 +4,7 @@ import { authenticateApiKey } from "@/lib/auth";
 import { resolveNetwork, resolveRpcUrl, getAgentSecret, getSponsorSecret } from "@/lib/config";
 import { hasFeature } from "@/lib/entitlements";
 import { runAgentTask } from "stellaragent-sdk";
+import { recordAgentEvent } from "@/lib/agent-events";
 
 export const dynamic = "force-dynamic";
 
@@ -65,6 +66,29 @@ export async function POST(req: NextRequest) {
       rpcUrl: resolveRpcUrl(network)
     }
   );
+
+  try {
+    await recordAgentEvent({
+      agentId: agent.id,
+      kind: "agent_pay",
+      source: "api",
+      toolName: result.plan.toolName,
+      status: result.outcome.kind,
+      summary: `Agent pay request executed with ${result.plan.source} planning.`,
+      network,
+      txHash: result.outcome.kind === "payment" ? result.outcome.payment.txHash : result.outcome.kind === "sponsored" ? result.outcome.txHash : null,
+      payload: {
+        task: body.data.task,
+        amount: body.data.amount,
+        destination: body.data.destination,
+        memo: body.data.memo ?? null,
+        plan: result.plan,
+        outcome: result.outcome
+      }
+    });
+  } catch {
+    // Audit logging is best effort; payment execution should still complete.
+  }
 
   return NextResponse.json({
     agentId: agent.id,

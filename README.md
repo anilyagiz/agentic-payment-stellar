@@ -70,7 +70,7 @@ npm run dev
 - Tool manifest API: `/api/tools`
 - Entitlements API: `/api/entitlements`
 - Agent demo API: `/api/agent-demo`
-- Agent pay API: `/api/agent-pay`
+- Agent event history API: `/api/agent-events`
 
 ## Submission Docs
 
@@ -81,3 +81,7 @@ npm run dev
 - [Security checklist](docs/security-checklist.md)
 - [User guide](docs/user-guide.md)
 - [Demo day outline](docs/demo-day.md)
+
+## Examples
+
+- [Direct agent payment script](examples/agent-pay.ts)

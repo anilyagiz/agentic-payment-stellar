@@ -3,6 +3,7 @@ import { z } from "zod";
 import { runAgentDemo } from "stellaragent-sdk";
 import { resolveNetwork, resolveRpcUrl, getDemoAgentSecret } from "@/lib/config";
 import { getSponsorSecret } from "@/lib/config";
+import { recordAgentEvent } from "@/lib/agent-events";
 
 export const dynamic = "force-dynamic";
 
@@ -51,6 +52,28 @@ export async function POST(req: NextRequest) {
       rpcUrl: resolveRpcUrl(network)
     }
   );
+
+  try {
+    await recordAgentEvent({
+      kind: "agent_demo",
+      source: "demo",
+      toolName: result.plan.toolName,
+      status: result.outcome.kind,
+      summary: `Demo run executed with ${result.plan.source} planning.`,
+      network,
+      txHash: result.outcome.kind === "payment" ? result.outcome.payment.txHash : result.outcome.kind === "sponsored" ? result.outcome.txHash : null,
+      payload: {
+        task: body.data.task,
+        amount: body.data.amount,
+        destination: body.data.destination,
+        memo: body.data.memo ?? null,
+        plan: result.plan,
+        outcome: result.outcome
+      }
+    });
+  } catch {
+    // Demo audit logging is best effort.
+  }
 
   return NextResponse.json({
     network,
