@@ -224,3 +224,7 @@ export class StellarAgentDemoClient {
     return runAgentDemo(input, this.config);
   }
 }
+
+export const runAgentTask = runAgentDemo;
+
+export class StellarAgentAgentClient extends StellarAgentDemoClient {}

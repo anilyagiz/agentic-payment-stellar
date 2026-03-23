@@ -6,6 +6,7 @@ import { ensureSecretKey } from "./utils";
 import { Keypair } from "@stellar/stellar-sdk";
 import { createAgentToolManifest, executeAgentTool } from "./tools";
 import { AgentToolManifest } from "./tools";
+import { runAgentDemo, AgentDemoInput, AgentDemoRun } from "./demo";
 
 export class StellarAgentClient {
   constructor(private readonly config: StellarAgentConfig) {}
@@ -22,11 +23,19 @@ export class StellarAgentClient {
     return createAgentToolManifest();
   }
 
+  agentTools(): AgentToolManifest {
+    return this.tools();
+  }
+
   async runTool(
     toolName: "quote_payment" | "pay" | "sponsored_pay",
     input: Record<string, unknown>
   ) {
     return executeAgentTool(toolName, input, this.config);
+  }
+
+  async runAgentTask(input: AgentDemoInput): Promise<AgentDemoRun> {
+    return runAgentDemo(input, this.config);
   }
 
   async balance(): Promise<string> {

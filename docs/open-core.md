@@ -51,6 +51,16 @@ const result = await client.run({
 
 The same flow is exposed in the dashboard at `/demo/agent` and through the API at `/api/agent-demo`.
 
+## Agent payment API
+
+For direct agent integrations, use `/api/agent-pay`.
+
+- It authenticates with the agent API key.
+- It executes quote or payment flows against Stellar.
+- It respects plan-based feature gates.
+
+This is the path to use when a client app wants the agent to actually pay, rather than just showcase the planner.
+
 ## Commercial boundary
 
 The core product remains usable for experimentation and basic payments. The hosted paid layer is where you charge for operational features that save customers time, reduce risk, and support scale.

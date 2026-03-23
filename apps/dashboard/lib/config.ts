@@ -27,6 +27,10 @@ export function getDemoAgentSecret(): string | null {
   return process.env.DEMO_AGENT_SECRET_KEY ?? null;
 }
 
+export function getAgentSecret(): string | null {
+  return process.env.AGENT_SECRET_KEY ?? process.env.DEMO_AGENT_SECRET_KEY ?? null;
+}
+
 export function getSalesEmail(): string {
   return process.env.NEXT_PUBLIC_SALES_EMAIL ?? "sales@stellaragent.dev";
 }

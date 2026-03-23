@@ -61,6 +61,7 @@ npm run dev
 - Pricing page: `/pricing`
 - Open-core model: `/open-core`
 - Agent demo: `/demo/agent`
+- Agent pay API: `/api/agent-pay`
 - Dashboard overview: `/dashboard`
 - Transactions: `/dashboard/transactions`
 - Agents: `/dashboard/agents`
@@ -69,6 +70,7 @@ npm run dev
 - Tool manifest API: `/api/tools`
 - Entitlements API: `/api/entitlements`
 - Agent demo API: `/api/agent-demo`
+- Agent pay API: `/api/agent-pay`
 
 ## Submission Docs
 
