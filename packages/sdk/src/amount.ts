@@ -12,7 +12,9 @@ function normalizeDecimal(input: string): string {
 
 export function parseXlmToStroops(amount: string): bigint {
   const normalized = normalizeDecimal(amount);
-  const [whole, fraction = ""] = normalized.split(".");
+  const dotIndex = normalized.indexOf(".");
+  const whole = dotIndex === -1 ? normalized : normalized.slice(0, dotIndex);
+  const fraction = dotIndex === -1 ? "" : normalized.slice(dotIndex + 1);
   if (fraction.length > 7) {
     throw new StellarAgentError("INVALID_AMOUNT", "Amount exceeds 7 decimal places");
   }

@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
 
   const network = body.data.network ?? resolveNetwork();
   const tx = new Transaction(body.data.signedTransactionXdr, networkPassphraseFor(network));
-  const source = tx.sourceAccount.accountId();
+  const source = tx.source;
 
   if (source !== agent.publicKey) {
     return NextResponse.json({ error: "Transaction source does not match agent" }, { status: 403 });
@@ -37,10 +37,10 @@ export async function POST(req: NextRequest) {
   const confirmed = await submitAndPoll(tx);
 
   const transaction = await prisma.transaction.upsert({
-    where: { txHash: confirmed.hash },
+    where: { txHash: confirmed.txHash },
     create: {
       agentId: agent.id,
-      txHash: confirmed.hash,
+      txHash: confirmed.txHash,
       sourceAccount: source,
       destination: body.data.destination,
       amount: body.data.amount,

@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/db";
 import { TransactionTable } from "@/components/TransactionTable";
 
+export const dynamic = "force-dynamic";
+
 export default async function TransactionsPage() {
   const transactions = await prisma.transaction.findMany({
     orderBy: { submittedAt: "desc" },

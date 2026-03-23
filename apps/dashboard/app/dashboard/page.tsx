@@ -2,6 +2,8 @@ import { prisma } from "@/lib/db";
 import { MetricsCard } from "@/components/MetricsCard";
 import { TransactionTable } from "@/components/TransactionTable";
 
+export const dynamic = "force-dynamic";
+
 async function getTotals() {
   const [transactions, agents, earnings, recentTransactions] = await Promise.all([
     prisma.transaction.count(),

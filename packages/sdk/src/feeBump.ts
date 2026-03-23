@@ -14,11 +14,11 @@ export async function sponsoredPay(
   const server = createRpcServer(network, rpcUrl);
 
   const innerTx = new Transaction(innerTxXdr, getNetworkPassphrase(network));
-  const feeBid = BASE_FEE * (innerTx.operations.length + 1);
+  const feeBid = Number(BASE_FEE) * (innerTx.operations.length + 1);
 
   const feeBumpTx = TransactionBuilder.buildFeeBumpTransaction(
     sponsor,
-    feeBid,
+    String(feeBid),
     innerTx,
     getNetworkPassphrase(network)
   );
@@ -39,5 +39,5 @@ export async function sponsoredPay(
     throw new StellarAgentError("TX_FAILED", `Fee bump completed with status: ${confirmed.status}`);
   }
 
-  return confirmed.hash;
+  return confirmed.txHash;
 }

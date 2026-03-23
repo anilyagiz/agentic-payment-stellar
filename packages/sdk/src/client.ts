@@ -18,11 +18,19 @@ export class StellarAgentClient {
 
   async balance(): Promise<string> {
     ensureSecretKey(this.config.secretKey);
-    const server = createRpcServer(this.config.network, this.config.rpcUrl);
     const keypair = Keypair.fromSecret(this.config.secretKey);
-    const account = await server.getAccount(keypair.publicKey());
-    const native = account.balances.find((balance) => balance.asset_type === "native");
+    const horizonUrl =
+      this.config.network === "mainnet"
+        ? "https://horizon.stellar.org"
+        : "https://horizon-testnet.stellar.org";
+    const response = await fetch(`${horizonUrl}/accounts/${keypair.publicKey()}`);
+    if (!response.ok) {
+      return "0";
+    }
+    const account = (await response.json()) as {
+      balances?: Array<{ asset_type?: string; balance?: string }>;
+    };
+    const native = account.balances?.find((balance) => balance.asset_type === "native");
     return native?.balance ?? "0";
   }
 }
-

@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/db";
 import { EarningsChart } from "@/components/EarningsChart";
 
+export const dynamic = "force-dynamic";
+
 function groupByDay(items: { amount: string; createdAt: Date }[]) {
   const buckets = new Map<string, number>();
   for (const item of items) {

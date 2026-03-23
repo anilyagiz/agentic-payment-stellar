@@ -77,7 +77,7 @@ export async function pay(params: PaymentParams, config: StellarAgentConfig): Pr
 
   return {
     success: true,
-    txHash: confirmed.hash,
+    txHash: confirmed.txHash,
     amount: formatStroops(netStroops),
     fee: formatStroops(feeStroops),
     timestamp: new Date().toISOString(),
