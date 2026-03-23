@@ -311,6 +311,136 @@ main {
   margin-bottom: 8px !important;
 }
 
+.launchpad {
+  margin-top: 32px;
+}
+
+.launchpad__panel {
+  background:
+    radial-gradient(circle at top right, rgba(56, 189, 248, 0.12), transparent 32%),
+    linear-gradient(180deg, rgba(10, 16, 36, 0.96), rgba(6, 10, 22, 0.92));
+}
+
+.launchpad__eyebrow {
+  margin: 0 0 8px;
+  color: #7dd3fc;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+}
+
+.launchpad__badge {
+  padding: 10px 14px;
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  border-radius: 999px;
+  background: rgba(56, 189, 248, 0.08);
+  color: #cceeff;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.launchpad__grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.launchpad__card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.launchpad__copy {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.launchpad__button {
+  width: 100%;
+}
+
+.launchpad__form {
+  display: grid;
+  gap: 12px;
+}
+
+.launchpad__field {
+  display: grid;
+  gap: 8px;
+}
+
+.launchpad__field span {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.launchpad__input {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: rgba(255,255,255,0.04);
+  color: var(--text);
+  outline: none;
+}
+
+.launchpad__input:focus {
+  border-color: rgba(251, 146, 60, 0.45);
+  box-shadow: 0 0 0 3px rgba(251, 146, 60, 0.1);
+}
+
+.launchpad__result {
+  display: grid;
+  gap: 12px;
+  padding-top: 4px;
+}
+
+.launchpad__result-label {
+  margin: 0 0 6px;
+  color: var(--muted);
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.launchpad__mono {
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  background: rgba(3, 8, 20, 0.62);
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 0.88rem;
+  overflow-wrap: anywhere;
+}
+
+.launchpad__result-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.launchpad__note {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.launchpad__error {
+  margin: 0;
+  color: #fecaca;
+  font-size: 0.92rem;
+}
+
+.launchpad__copy-state {
+  margin: 0;
+  color: #a7f3d0;
+  font-size: 0.88rem;
+}
+
 .footer-note {
   color: var(--muted);
   font-size: 0.9rem;
@@ -339,6 +469,10 @@ main {
   }
 
   .grid--cards {
+    grid-template-columns: 1fr;
+  }
+
+  .launchpad__grid {
     grid-template-columns: 1fr;
   }
 

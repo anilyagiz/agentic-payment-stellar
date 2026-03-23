@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { OnboardingPanel } from "@/components/OnboardingPanel";
 
 const highlights = [
   { title: "RPC submission", body: "Modern Stellar RPC flow with sendTransaction + pollTransaction." },
@@ -22,6 +23,8 @@ export default function LandingPage() {
           <a className="button button--secondary" href="/api/health">Health check</a>
         </div>
       </section>
+
+      <OnboardingPanel />
 
       <section className="section grid grid--cards">
         {highlights.map((item) => (
