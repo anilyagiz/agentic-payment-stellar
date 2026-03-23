@@ -1,0 +1,62 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TransactionStatus {
+  pending
+  submitted
+  confirmed
+  failed
+}
+
+model Agent {
+  id           String        @id @default(cuid())
+  name         String
+  publicKey    String        @unique
+  apiKeyPrefix  String        @unique
+  apiKeyHash    String
+  active       Boolean       @default(true)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  transactions Transaction[]
+}
+
+model Transaction {
+  id             String            @id @default(cuid())
+  agentId        String
+  agent          Agent             @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  txHash         String            @unique
+  sourceAccount   String
+  destination    String
+  amount         String
+  fee            String
+  memo           String?
+  network        String
+  status         TransactionStatus @default(submitted)
+  operationCount Int               @default(0)
+  submittedAt    DateTime          @default(now())
+  confirmedAt    DateTime?
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+}
+
+model PlatformEarning {
+  id         String   @id @default(cuid())
+  txHash     String   @unique
+  amount     String
+  network    String
+  createdAt  DateTime @default(now())
+}
+
+model IndexCursor {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  cursor    String
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+}
