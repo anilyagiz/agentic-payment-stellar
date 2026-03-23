@@ -97,7 +97,7 @@ export function OnboardingPanel() {
   }
 
   return (
-    <section className="section launchpad">
+    <section className="section launchpad" id="launchpad">
       <div className="panel launchpad__panel">
         <div className="panel__header">
           <div>

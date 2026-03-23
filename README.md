@@ -11,6 +11,9 @@ Autonomous payments for autonomous agents on Stellar.
 - Testnet/mainnet network selection through environment variables
 - Fee sponsorship support via fee-bump transactions
 - Transaction indexing through the application database
+- Pricing and lead-generation funnel for paid conversion
+- Metrics dashboard for operational visibility
+- Monitoring dashboard and checklist docs for submission review
 
 ## Stack
 
@@ -49,3 +52,21 @@ npm run build
 npm run dev
 ```
 
+## Product Pages
+
+- Landing page: `/`
+- Pricing page: `/pricing`
+- Dashboard overview: `/dashboard`
+- Transactions: `/dashboard/transactions`
+- Agents: `/dashboard/agents`
+- Earnings: `/dashboard/earnings`
+- Monitoring: `/dashboard/monitoring`
+
+## Submission Docs
+
+- [Black Belt submission checklist](docs/black-belt-submission.md)
+- [Advanced feature proof](docs/advanced-feature.md)
+- [Monitoring notes](docs/monitoring.md)
+- [Security checklist](docs/security-checklist.md)
+- [User guide](docs/user-guide.md)
+- [Demo day outline](docs/demo-day.md)

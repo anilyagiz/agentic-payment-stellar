@@ -9,7 +9,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <span className="brand__tagline">Operational command center</span>
         </div>
         <nav className="nav__links">
+          <Link className="pill" href={"/pricing" as const}>Pricing</Link>
           <Link className="pill" href="/dashboard">Overview</Link>
+          <Link className="pill" href={"/dashboard/monitoring" as const}>Monitoring</Link>
           <Link className="pill" href="/dashboard/transactions">Transactions</Link>
           <Link className="pill" href="/dashboard/agents">Agents</Link>
           <Link className="pill" href="/dashboard/earnings">Earnings</Link>
