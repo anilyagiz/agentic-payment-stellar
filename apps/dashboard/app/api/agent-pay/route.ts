@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import { StrKey } from "@stellar/stellar-sdk";
 import { authenticateApiKey } from "@/lib/auth";
 import { resolveNetwork, resolveRpcUrl, getAgentSecret, getSponsorSecret } from "@/lib/config";
 import { hasFeature } from "@/lib/entitlements";
@@ -11,7 +12,9 @@ export const dynamic = "force-dynamic";
 const AgentPaySchema = z.object({
   task: z.string().min(8).max(240),
   amount: z.string().min(1).max(32),
-  destination: z.string().min(1).max(120),
+  destination: z.string().refine((val) => StrKey.isValidEd25519PublicKey(val), {
+    message: "Invalid Stellar public key"
+  }),
   memo: z.string().max(28).optional(),
   useLlm: z.boolean().optional(),
   llmApiKey: z.string().min(1).optional(),
