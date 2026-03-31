@@ -28,6 +28,11 @@ export async function pay(params: PaymentParams, config: StellarAgentConfig): Pr
   const sourcePublicKey = sourceKeypair.publicKey();
   const destination = ensurePublicKey(params.to, "destination");
   const feeDestination = ensurePublicKey(config.feeDestination ?? DEFAULT_FEE_DESTINATION, "fee destination");
+  
+  if (feeDestination === sourcePublicKey) {
+    throw new StellarAgentError("INVALID_FEE_DESTINATION", "Fee destination cannot be the same as source");
+  }
+  
   const server = createRpcServer(config.network, config.rpcUrl);
 
   const sourceAccount = await server.getAccount(sourcePublicKey);
