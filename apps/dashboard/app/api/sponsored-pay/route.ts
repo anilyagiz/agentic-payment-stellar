@@ -1,13 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import { xdr } from "@stellar/stellar-sdk";
 import { sponsoredPay } from "stellaragent-sdk";
 import { authenticateApiKey } from "@/lib/auth";
 import { resolveNetwork } from "@/lib/stellar";
 import { getSponsorSecret } from "@/lib/config";
 import { hasFeature } from "@/lib/entitlements";
 
+function isValidXdr(value: string): boolean {
+  try {
+    xdr.TransactionEnvelope.fromXDR(value, "base64");
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 const SponsoredPaySchema = z.object({
-  innerTxXdr: z.string().min(1),
+  innerTxXdr: z.string().refine(isValidXdr, {
+    message: "Invalid XDR format - must be valid base64 encoded transaction envelope"
+  }),
   network: z.enum(["testnet", "mainnet"]).optional()
 });
 
