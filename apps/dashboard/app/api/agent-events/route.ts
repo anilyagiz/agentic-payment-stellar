@@ -12,7 +12,13 @@ export async function GET(req: NextRequest) {
   }
 
   const url = new URL(req.url);
-  const limit = Math.min(Number(url.searchParams.get("limit") ?? "20") || 20, 100);
+  const rawLimit = url.searchParams.get("limit");
+  const parsedLimit = rawLimit ? parseInt(rawLimit, 10) : 20;
+  const limit = Math.min(Number.isNaN(parsedLimit) ? 20 : parsedLimit, 100);
+
+  if (!agent.id) {
+    return NextResponse.json({ error: "Invalid agent state" }, { status: 500 });
+  }
 
   const events = await prisma.agentEvent.findMany({
     where: { agentId: agent.id },
