@@ -45,14 +45,35 @@ export class StellarAgentClient {
       this.config.network === "mainnet"
         ? "https://horizon.stellar.org"
         : "https://horizon-testnet.stellar.org";
-    const response = await fetch(`${horizonUrl}/accounts/${keypair.publicKey()}`);
-    if (!response.ok) {
-      return "0";
+    
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 10000);
+    
+    try {
+      const response = await fetch(`${horizonUrl}/accounts/${keypair.publicKey()}`, {
+        signal: controller.signal
+      });
+      
+      if (response.status === 404) {
+        return "0";
+      }
+      
+      if (!response.ok) {
+        throw new Error(`Horizon API error: ${response.status} ${response.statusText}`);
+      }
+      
+      const account = (await response.json()) as {
+        balances?: Array<{ asset_type?: string; balance?: string }>;
+      };
+      const native = account.balances?.find((balance) => balance.asset_type === "native");
+      return native?.balance ?? "0";
+    } catch (error) {
+      if (error instanceof Error && error.name === "AbortError") {
+        throw new Error("Balance check timed out after 10s");
+      }
+      throw error;
+    } finally {
+      clearTimeout(timeout);
     }
-    const account = (await response.json()) as {
-      balances?: Array<{ asset_type?: string; balance?: string }>;
-    };
-    const native = account.balances?.find((balance) => balance.asset_type === "native");
-    return native?.balance ?? "0";
   }
 }
