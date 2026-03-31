@@ -17,6 +17,19 @@ Autonomous payments for autonomous agents on Stellar.
 - Metrics dashboard for operational visibility
 - Monitoring dashboard and checklist docs for submission review
 
+## Security
+
+- API key authentication required for all data endpoints
+- SHA-256 API key hashing with pepper
+- Timing-safe comparison for key validation
+- Distributed rate limiting (Redis/Upstash for production)
+- CORS configuration with security headers
+- Request size limiting (1MB)
+- Input validation with Zod schemas
+- Parameterized Prisma queries (SQL injection safe)
+- Stellar address validation
+- Transaction source verification
+
 ## Stack
 
 - Next.js 14
@@ -45,9 +58,75 @@ FEE_BPS=30
 API_KEY_PEPPER=change-me
 INDEXER_SECRET=change-me
 NEXT_PUBLIC_SITE_URL=https://stellaragent.vercel.app
+# Optional: Redis for distributed rate limiting (production)
+UPSTASH_REDIS_REST_URL=https://...redislabs.com
+UPSTASH_REDIS_REST_TOKEN=your-token
 ```
 
-## Run
+## Vercel Deployment
+
+### Quick Deploy
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/anilyagiz/agentic-payment-stellar)
+
+### Manual Setup
+
+1. **Install Vercel CLI:**
+   ```bash
+   npm i -g vercel
+   ```
+
+2. **Login to Vercel:**
+   ```bash
+   vercel login
+   ```
+
+3. **Set Environment Variables:**
+   Copy `.env.example` to Vercel dashboard:
+   ```bash
+   vercel env add DATABASE_URL
+   vercel env add API_KEY_PEPPER
+   vercel env add INDEXER_SECRET
+   vercel env add SPONSOR_SECRET_KEY
+   vercel env add PLATFORM_SECRET_KEY
+   vercel env add DEMO_AGENT_SECRET_KEY
+   vercel env add NEXT_PUBLIC_SITE_URL
+   ```
+
+4. **Deploy:**
+   ```bash
+   vercel --prod
+   ```
+
+### Database Setup (Required)
+
+For serverless deployment, use a connection-pooled database URL:
+
+```env
+DATABASE_URL=postgresql://user:pass@host:port/db?pgbouncer=true&connection_limit=10
+```
+
+**Recommended:**
+- [Vercel Postgres](https://vercel.com/storage/postgres)
+- [Supabase](https://supabase.com)
+- [Railway](https://railway.app)
+
+### Redis Setup (Optional but Recommended)
+
+For distributed rate limiting across serverless functions:
+
+1. Create free account at [Upstash](https://upstash.com)
+2. Copy REST URL and token to environment variables
+3. Rate limiting will automatically use Redis when configured
+
+### Pre-Deployment Checklist
+
+- [ ] All environment variables set in Vercel dashboard
+- [ ] Database migrated with `npx prisma migrate deploy`
+- [ ] Testnet wallet funded for demo
+- [ ] Custom domain configured (optional)
+- [ ] Build passes locally: `npm run build`
+
+## Run Locally
 
 ```bash
 npm install
