@@ -66,22 +66,34 @@ export async function pay(params: PaymentParams, config: StellarAgentConfig): Pr
     throw new StellarAgentError("SUBMISSION_FAILED", `Transaction submission failed: ${sent.status}`);
   }
 
-  const confirmed = await server.pollTransaction(sent.hash, {
-    attempts: 5,
-    sleepStrategy: () => 1000
-  });
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 60000);
+  
+  try {
+    const confirmed = await server.pollTransaction(sent.hash, {
+      attempts: 10,
+      sleepStrategy: (iter: number) => Math.min(1000 * Math.pow(1.2, iter), 5000)
+    });
 
-  if (confirmed.status !== "SUCCESS") {
-    throw new StellarAgentError("TX_FAILED", `Transaction completed with status: ${confirmed.status}`);
+    if (confirmed.status !== "SUCCESS") {
+      throw new StellarAgentError("TX_FAILED", `Transaction completed with status: ${confirmed.status}`);
+    }
+
+    return {
+      success: true,
+      txHash: confirmed.txHash,
+      amount: formatStroops(netStroops),
+      fee: formatStroops(feeStroops),
+      timestamp: new Date().toISOString(),
+      ledger: confirmed.latestLedger,
+      status: confirmed.status
+    };
+  } catch (error) {
+    if (error instanceof Error && error.name === "AbortError") {
+      throw new StellarAgentError("TX_TIMEOUT", "Transaction polling timed out after 60s");
+    }
+    throw error;
+  } finally {
+    clearTimeout(timeout);
   }
-
-  return {
-    success: true,
-    txHash: confirmed.txHash,
-    amount: formatStroops(netStroops),
-    fee: formatStroops(feeStroops),
-    timestamp: new Date().toISOString(),
-    ledger: confirmed.latestLedger,
-    status: confirmed.status
-  };
 }
