@@ -4,7 +4,7 @@ import { consumeRateLimit, getClientIp } from "@/lib/rate-limit";
 import { resolveNetwork } from "@/lib/config";
 
 export async function POST(req: NextRequest) {
-  const rateLimit = consumeRateLimit(`wallet-create:${getClientIp(req)}`, 4, 15 * 60 * 1000);
+  const rateLimit = await consumeRateLimit(`wallet-create:${getClientIp(req)}`, 4, 15 * 60 * 1000);
   if (!rateLimit.allowed) {
     return NextResponse.json(
       { error: "Too many wallet creation attempts" },
@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
 
   const keypair = Keypair.random();
   const controller = new AbortController();
-  const timeout = globalThis.setTimeout(() => controller.abort(), 10_000);
+  const timeout = setTimeout(() => controller.abort(), 10_000);
 
   try {
     const response = await fetch(`https://friendbot.stellar.org/?addr=${keypair.publicKey()}`, {
@@ -37,7 +37,10 @@ export async function POST(req: NextRequest) {
         { status: 502 }
       );
     }
-  } catch {
+  } catch (error) {
+    if (error instanceof Error && error.name === "AbortError") {
+      return NextResponse.json({ error: "Friendbot request timed out" }, { status: 504 });
+    }
     return NextResponse.json({ error: "Friendbot is unavailable" }, { status: 502 });
   } finally {
     clearTimeout(timeout);
