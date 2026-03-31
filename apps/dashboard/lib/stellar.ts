@@ -21,16 +21,49 @@ export function rpcServer() {
   return new Server(rpcUrlFor(network));
 }
 
+async function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function retryWithBackoff<T>(
+  operation: () => Promise<T>,
+  maxRetries: number = 3,
+  baseDelay: number = 1000
+): Promise<T> {
+  let lastError: Error | undefined;
+  
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      return await operation();
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error(String(error));
+      
+      if (attempt === maxRetries) {
+        throw lastError;
+      }
+      
+      const delay = baseDelay * Math.pow(2, attempt);
+      await sleep(delay);
+    }
+  }
+  
+  throw lastError;
+}
+
 export async function submitAndPoll(tx: Transaction) {
   const server = rpcServer();
-  const reply = await server.sendTransaction(tx);
+  
+  const reply = await retryWithBackoff(async () => {
+    return await server.sendTransaction(tx);
+  }, 3, 500);
+  
   if (reply.status !== "PENDING") {
     throw new Error(`Submission failed with status ${reply.status}`);
   }
 
   return server.pollTransaction(reply.hash, {
-    attempts: 5,
-    sleepStrategy: (_iter: number) => 1000
+    attempts: 10,
+    sleepStrategy: (iter: number) => Math.min(1000 * Math.pow(1.5, iter), 10000)
   });
 }
 
