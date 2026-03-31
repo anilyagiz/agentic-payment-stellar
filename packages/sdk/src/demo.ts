@@ -106,42 +106,48 @@ async function requestLlmPlan(
 
   const endpoint = llm.baseUrl ?? "https://api.openai.com/v1/chat/completions";
   const model = llm.model ?? "gpt-4o-mini";
-  const response = await fetch(endpoint, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${llm.apiKey}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      model,
-      temperature: 0,
-      response_format: { type: "json_object" },
-      messages: [
-        {
-          role: "system",
-          content:
-            "You are a payment agent planner. Choose exactly one tool from the manifest and return strict JSON only."
-        },
-        {
-          role: "user",
-          content: JSON.stringify({
-            task: input.task,
-            amount: input.amount,
-            destination: input.destination,
-            memo: input.memo,
-            manifest
-          })
-        }
-      ]
-    })
-  });
+  
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 30000);
+  
+  try {
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${llm.apiKey}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model,
+        temperature: 0,
+        response_format: { type: "json_object" },
+        messages: [
+          {
+            role: "system",
+            content:
+              "You are a payment agent planner. Choose exactly one tool from the manifest and return strict JSON only."
+          },
+          {
+            role: "user",
+            content: JSON.stringify({
+              task: input.task,
+              amount: input.amount,
+              destination: input.destination,
+              memo: input.memo,
+              manifest
+            })
+          }
+        ]
+      }),
+      signal: controller.signal
+    });
 
-  if (!response.ok) {
-    throw new StellarAgentError("LLM_ERROR", `LLM request failed with status ${response.status}`);
-  }
+    if (!response.ok) {
+      return createFallbackPlan(input, config);
+    }
 
-  const payload = (await response.json()) as { choices?: Array<{ message?: { content?: string } }> };
-  const content = payload.choices?.[0]?.message?.content;
+    const payload = (await response.json()) as { choices?: Array<{ message?: { content?: string } }> };
+    const content = payload.choices?.[0]?.message?.content;
   if (!content) {
     return createFallbackPlan(input, config);
   }
@@ -177,7 +183,11 @@ async function requestLlmPlan(
                 amount: input.amount,
                 ...(input.memo ? { memo: input.memo } : {})
               }
-  };
+  } catch {
+    return createFallbackPlan(input, config);
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 export async function runAgentDemo(input: AgentDemoInput, config: StellarAgentConfig): Promise<AgentDemoRun> {
