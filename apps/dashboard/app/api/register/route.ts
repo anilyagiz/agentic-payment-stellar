@@ -26,7 +26,7 @@ const RegisterSchema = z.object({
 
 export async function POST(req: NextRequest) {
   const clientKey = `register:${getClientIp(req)}`;
-  const rateLimit = consumeRateLimit(clientKey, 8, 15 * 60 * 1000);
+  const rateLimit = await consumeRateLimit(clientKey, 8, 15 * 60 * 1000);
   if (!rateLimit.allowed) {
     return NextResponse.json(
       { error: "Too many registration attempts" },
@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
 
   const { apiKey, apiKeyHash, apiKeyPrefix } = generateApiKey();
 
-  let agent;
+  let agent: { id: string; publicKey: string; createdAt: Date };
   try {
     agent = await prisma.agent.create({
       data: {
@@ -56,8 +56,8 @@ export async function POST(req: NextRequest) {
         apiKeyPrefix
       }
     });
-  } catch (error) {
-    if (typeof error === "object" && error && "code" in error && error.code === "P2002") {
+  } catch (error: unknown) {
+    if (typeof error === "object" && error && "code" in error && (error as { code: string }).code === "P2002") {
       return NextResponse.json({ error: "Agent already registered for this public key" }, { status: 409 });
     }
     throw error;
@@ -75,8 +75,8 @@ export async function POST(req: NextRequest) {
       walletPublicKey: payload.data.publicKey,
       agentId: agent.id
     });
-  } catch (error) {
-    if (typeof error === "object" && error && "code" in error && error.code === "P2002") {
+  } catch (error: unknown) {
+    if (typeof error === "object" && error && "code" in error && (error as { code: string }).code === "P2002") {
       return NextResponse.json({ error: "Customer record already exists for this wallet or email" }, { status: 409 });
     }
     throw error;

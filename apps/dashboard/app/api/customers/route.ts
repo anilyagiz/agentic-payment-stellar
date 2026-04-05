@@ -33,7 +33,7 @@ function toCustomerStatus(status?: z.infer<typeof CustomerSchema>["status"]) {
 }
 
 export async function POST(req: NextRequest) {
-  const rateLimit = consumeRateLimit(`customers:${getClientIp(req)}`, 12, 60 * 60 * 1000);
+  const rateLimit = await consumeRateLimit(`customers:${getClientIp(req)}`, 12, 60 * 60 * 1000);
   if (!rateLimit.allowed) {
     return NextResponse.json(
       { error: "Too many customer submissions" },

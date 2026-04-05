@@ -46,3 +46,11 @@ export function getRequiredEnvKeys() {
 export function getMissingEnvKeys(keys = getRequiredEnvKeys()) {
   return keys.filter((key) => !process.env[key]);
 }
+
+export function getRedisUrl(): string | null {
+  return process.env.UPSTASH_REDIS_REST_URL ?? null;
+}
+
+export function getRedisToken(): string | null {
+  return process.env.UPSTASH_REDIS_REST_TOKEN ?? null;
+}

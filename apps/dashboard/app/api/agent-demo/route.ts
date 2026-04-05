@@ -4,6 +4,7 @@ import { runAgentDemo } from "stellaragent-sdk";
 import { resolveNetwork, resolveRpcUrl, getDemoAgentSecret } from "@/lib/config";
 import { getSponsorSecret } from "@/lib/config";
 import { recordAgentEvent } from "@/lib/agent-events";
+import { consumeRateLimit, getClientIp } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -19,6 +20,19 @@ const AgentDemoSchema = z.object({
 });
 
 export async function POST(req: NextRequest) {
+  const rateLimit = await consumeRateLimit(`agent-demo:${getClientIp(req)}`, 10, 60 * 1000);
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      { error: "Too many demo requests" },
+      {
+        status: 429,
+        headers: {
+          "Retry-After": String(Math.ceil((rateLimit.resetAt - Date.now()) / 1000))
+        }
+      }
+    );
+  }
+
   const body = AgentDemoSchema.safeParse(await req.json().catch(() => null));
   if (!body.success) {
     return NextResponse.json({ error: "Invalid payload", issues: body.error.flatten() }, { status: 400 });

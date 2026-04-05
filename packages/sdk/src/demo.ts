@@ -183,6 +183,7 @@ async function requestLlmPlan(
                 amount: input.amount,
                 ...(input.memo ? { memo: input.memo } : {})
               }
+  };
   } catch {
     return createFallbackPlan(input, config);
   } finally {
