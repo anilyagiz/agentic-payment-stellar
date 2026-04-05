@@ -4,13 +4,5 @@
   "outputDirectory": "apps/dashboard/.next",
   "framework": "nextjs",
   "installCommand": "npm install",
-  "regions": ["iad1"],
-  "env": {
-    "DATABASE_URL": "@database_url",
-    "API_KEY_PEPPER": "@api_key_pepper",
-    "INDEXER_SECRET": "@indexer_secret",
-    "SPONSOR_SECRET_KEY": "@sponsor_secret_key",
-    "PLATFORM_SECRET_KEY": "@platform_secret_key",
-    "DEMO_AGENT_SECRET_KEY": "@demo_agent_secret_key"
-  }
+  "regions": ["iad1"]
 }
