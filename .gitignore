@@ -12,3 +12,5 @@ coverage
 packages/**/dist
 apps/**/.next
 apps/**/dist
+
+.vercel
